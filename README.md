@@ -1,6 +1,8 @@
 # Headout: Optimize HTTP Server
 > A simple HTTP server who works wonders
 
+#### Note: I have created two versions of the problem statement, one is the basic using readlines (refer [#73f886f](https://github.com/ankur12-1610/file-access-http-server/commit/73f886f4e38e9078b5a8679b65dda3c4a7c55b54)) and the latest one is optimized using linecache and storing upper_bound for every line (refer [#d476ab7](https://github.com/ankur12-1610/file-access-http-server/commit/d476ab70bf94082ac72e9b6ce0299513d2281a53)))
+
 ### Endpoints:
 - `/data` is the endpoint
 - Parameters passed in the url: `/data?n=1&m=20` or `data?n=1`
