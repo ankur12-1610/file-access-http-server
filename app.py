@@ -4,13 +4,24 @@ import linecache
 
 app = Flask(__name__)
 
+# data structure to store the upper bounds of all files
+
+# since max no of files are 30, storing max lines for all files
+upper_bounds = [0]*10000
+
 # return all chunk
 def allFile(n):
     try:
+        n = int(n)
+
         # check if file exists for particular n
-        fptr = open("tmp/data/"+n+".txt")
+        fptr = open(f"tmp/data/{n}.txt")
         content = fptr.readlines()
         fptr.close()
+
+        # set upper_bound if not set
+        if upper_bounds[n-1]==0:
+            upper_bounds[n-1]=len(content)
         res = "".join(content)
         return res, 200
     except:
@@ -19,23 +30,33 @@ def allFile(n):
 # return specific line of the file
 def specificLine(n, m):
     try:
-        # check if file exists for particular n
         m = int(m)
-        fileName = f"tmp/data/{n}.txt"
-        fptr = open(fileName)
-        # res = linecache.getline(fileName, m, module_globals=None)
-        # return res
-        content = fptr.readlines()
-        fptr.close()
-        # print(content)
-        maxi = len(content)
+        n = int(n)
+
+        # check if we have calculated the upper_bound in order to use linecache
+        if upper_bounds[n-1]==0:
+            fptr = open(f"tmp/data/{n}.txt")
+            content = fptr.readlines()
+            fptr.close()
+
+            # setting upper_bound
+            upper_bounds[n-1]=len(content)
+
+            # check if the give index is accessible
+            if m>upper_bounds[n-1] or m<=0:
+                return f"Line number {m} exceeds the number of lines in the file, maximum lines are {upper_bounds[n-1]}", 404
+            
+            # 1 based indexing
+            return content[m-1], 200
 
         # check if the give index is accessible
-        if m>maxi or m<=0:
-            return f"Line number {m} exceeds the number of lines in the file, maximum lines are {maxi}", 404
-        
-        # 1 based indexing
-        return content[m-1], 200
+        if m>upper_bounds[n-1] or m<=0:
+            return f"Line number {m} exceeds the number of lines in the file, maximum lines are {upper_bounds[n-1]}", 404
+
+        # already calculated upper_bound, use linecache for optimization
+        fileName = f"tmp/data/{n}.txt"
+        res = linecache.getline(fileName, m, module_globals=None)
+        return res
     except:
         return "Bad Request", 404
 
